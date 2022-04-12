@@ -1,5 +1,5 @@
 from datetime import date
-from python-dotenv import load_dotenv
+from dotenv import load_dotenv
 from pathlib import Path
 from sqlalchemy import create_engine
 import bs4 as bs
