@@ -54,22 +54,22 @@ for f in Files:
 
 # Download files
 # Create this bar_progress method which is invoked automatically from wget:
-def bar_progress(current, total, width=80):
-  progress_message = "Downloading: %d%% [%d / %d] bytes - " % (current / total * 100, current, total)
-  # Don't use print() as it will print in new line every time.
-  sys.stdout.write("\r" + progress_message)
-  sys.stdout.flush()
+#def bar_progress(current, total, width=80):
+#  progress_message = "Downloading: %d%% [%d / %d] bytes - " % (current / total * 100, current, total)
+#  # Don't use print() as it will print in new line every time.
+#  sys.stdout.write("\r" + progress_message)
+#  sys.stdout.flush()
 
 #%%
 # Download arquivos ################################################################################################################################
-i_l = 0
-for l in Files:
-    # Download dos arquivos
-    i_l += 1
-    print('Baixando arquivo:')
-    print(str(i_l) + ' - ' + l)
-    url = dados_rf+l
-    wget.download(url, out=output_files, bar=bar_progress)
+#i_l = 0
+#for l in Files:
+#    # Download dos arquivos
+#    i_l += 1
+#    print('Baixando arquivo:')
+#    print(str(i_l) + ' - ' + l)
+#    url = dados_rf+l
+#    wget.download(url, out=output_files, bar=bar_progress)
 
 #%%
 # Download layout:
