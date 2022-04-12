@@ -1,5 +1,5 @@
 from datetime import date
-from dotenv import load_dotenv
+from python-dotenv import load_dotenv
 from pathlib import Path
 from sqlalchemy import create_engine
 import bs4 as bs
@@ -75,7 +75,7 @@ def bar_progress(current, total, width=80):
 # Download layout:
 Layout = 'https://www.gov.br/receitafederal/pt-br/assuntos/orientacao-tributaria/cadastros/consultas/arquivos/NOVOLAYOUTDOSDADOSABERTOSDOCNPJ.pdf'
 print('Baixando layout:')
-wget.download(Layout, out=output_files, bar=bar_progress)
+wget.download(Layout, out=str(output_files), bar=bar_progress)
 
 ####################################################################################################################################################
 #%%
