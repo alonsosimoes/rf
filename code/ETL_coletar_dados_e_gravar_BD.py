@@ -18,7 +18,7 @@ import logging
 
 #Config Log
 # DateTime:Level:Arquivo:Mensagem
-log_format = '%(asctime)s:%(levelname)s:%(filename)s:%(message)s'
+log_format = '%(asctime)s:%(levelname)s:%(message)s'
 '''
    Aqui definimos as configurações do modulo.
 
@@ -64,16 +64,13 @@ for m in re.finditer(text, html_str):
     i_start = m.start()-40
     i_end = m.end()
     i_loc = html_str[i_start:i_end].find('href=')+6
-    print(html_str[i_start+i_loc:i_end])
     logger.info(html_str[i_start+i_loc:i_end])
     Files.append(html_str[i_start+i_loc:i_end])
 
-print('Arquivos que serão baixados:')
 logger.info('Arquivos que serão baixados:')
 i_f = 0
 for f in Files:
     i_f += 1
-    print(str(i_f) + ' - ' + f)
     logger.info(str(i_f) + ' - ' + f)
 
 #%%
@@ -185,7 +182,8 @@ cur = conn.cursor()
 #%%
 # Arquivos de empresa:
 empresa_insert_start = time.time()
-print("""
+
+logger.info("""
 #######################
 ## Arquivos de EMPRESA:
 #######################
@@ -196,7 +194,7 @@ cur.execute('DROP TABLE IF EXISTS "empresa";')
 conn.commit()
 
 for e in range(0, len(arquivos_empresa)):
-    print('Trabalhando no arquivo: '+arquivos_empresa[e]+' [...]')
+    logger.info('Trabalhando no arquivo: '+arquivos_empresa[e]+' [...]')
     try:
         del empresa
     except:
@@ -228,32 +226,36 @@ for e in range(0, len(arquivos_empresa)):
     # Gravar dados no banco:
     # Empresa
     empresa.to_sql(name='empresa', con=engine, if_exists='append', index=False)
-    print('Arquivo ' + arquivos_empresa[e] + ' inserido com sucesso no banco de dados!')
+    logger.info('Arquivo ' + arquivos_empresa[e] + ' inserido com sucesso no banco de dados!')
+      
 
 try:
     del empresa
 except:
     pass
-print('Arquivos de empresa finalizados!')
+logger.info('Arquivos de empresa finalizados!')
 empresa_insert_end = time.time()
 empresa_Tempo_insert = round((empresa_insert_end - empresa_insert_start))
-print('Tempo de execução do processo de empresa (em segundos): ' + str(empresa_Tempo_insert))
+logger.info('Tempo de execução do processo de empresa (em segundos): ' + str(empresa_Tempo_insert))
 
 #%%
 # Arquivos de estabelecimento:
 estabelecimento_insert_start = time.time()
-print("""
+
+logger.info("""
 ############################### 
 ## Arquivos de ESTABELECIMENTO:
 ###############################
 """)
+
+
 
 # Drop table antes do insert
 cur.execute('DROP TABLE IF EXISTS "estabelecimento";')
 conn.commit()
 
 for e in range(0, len(arquivos_estabelecimento)):
-    print('Trabalhando no arquivo: '+arquivos_estabelecimento[e]+' [...]')
+    logger.info('Trabalhando no arquivo: '+arquivos_estabelecimento[e]+' [...]')
     try:
         del estabelecimento
     except:
@@ -309,32 +311,34 @@ for e in range(0, len(arquivos_estabelecimento)):
     # Gravar dados no banco:
     # estabelecimento
     estabelecimento.to_sql(name='estabelecimento', con=engine, if_exists='append', index=False)
-    print('Arquivo ' + arquivos_estabelecimento[e] + ' inserido com sucesso no banco de dados!')
+    logger.info('Arquivo ' + arquivos_estabelecimento[e] + ' inserido com sucesso no banco de dados!')
 
 try:
     del estabelecimento
 except:
     pass
-print('Arquivos de estabelecimento finalizados!')
+logger.info('Arquivos de estabelecimento finalizados!')
 estabelecimento_insert_end = time.time()
 estabelecimento_Tempo_insert = round((estabelecimento_insert_end - estabelecimento_insert_start))
-print('Tempo de execução do processo de estabelecimento (em segundos): ' + str(estabelecimento_Tempo_insert))
+logger.info('Tempo de execução do processo de estabelecimento (em segundos): ' + str(estabelecimento_Tempo_insert))
 
 #%%
 # Arquivos de socios:
 socios_insert_start = time.time()
-print("""
+
+logger.info("""
 ######################
 ## Arquivos de SOCIOS:
 ######################
 """)
+
 
 # Drop table antes do insert
 cur.execute('DROP TABLE IF EXISTS "socios";')
 conn.commit()
 
 for e in range(0, len(arquivos_socios)):
-    print('Trabalhando no arquivo: '+arquivos_socios[e]+' [...]')
+    logger.info('Trabalhando no arquivo: '+arquivos_socios[e]+' [...]')  
     try:
         del socios
     except:
@@ -370,21 +374,22 @@ for e in range(0, len(arquivos_socios)):
     # Gravar dados no banco:
     # socios
     socios.to_sql(name='socios', con=engine, if_exists='append', index=False)
-    print('Arquivo ' + arquivos_socios[e] + ' inserido com sucesso no banco de dados!')
+    logger.info('Arquivo ' + arquivos_socios[e] + ' inserido com sucesso no banco de dados!')
 
 try:
     del socios
 except:
     pass
-print('Arquivos de socios finalizados!')
+logger.info('Arquivos de socios finalizados!')
 socios_insert_end = time.time()
 socios_Tempo_insert = round((socios_insert_end - socios_insert_start))
-print('Tempo de execução do processo de sócios (em segundos): ' + str(socios_Tempo_insert))
+logger.info('Tempo de execução do processo de sócios (em segundos): ' + str(socios_Tempo_insert))
 
 #%%
 # Arquivos de simples:
 simples_insert_start = time.time()
-print("""
+
+logger.info("""
 ################################
 ## Arquivos do SIMPLES NACIONAL:
 ################################
@@ -395,28 +400,28 @@ cur.execute('DROP TABLE IF EXISTS "simples";')
 conn.commit()
 
 for e in range(0, len(arquivos_simples)):
-    print('Trabalhando no arquivo: '+arquivos_simples[e]+' [...]')
+    logger.info('Trabalhando no arquivo: '+arquivos_simples[e]+' [...]')
     try:
         del simples
     except:
         pass
 
     # Verificar tamanho do arquivo:
-    print('Lendo o arquivo ' + arquivos_simples[e]+' [...]')
+    logger.info('Lendo o arquivo ' + arquivos_simples[e]+' [...]')
     extracted_file_path = Path(f'{extracted_files}/{arquivos_simples[e]}')
 
     simples_lenght = sum(1 for line in open(extracted_file_path, "r"))
-    print('Linhas no arquivo do Simples '+ arquivos_simples[e] +': '+str(simples_lenght))
+    logger.info('Linhas no arquivo do Simples '+ arquivos_simples[e] +': '+str(simples_lenght))
 
     tamanho_das_partes = 1000000 # Registros por carga
     partes = round(simples_lenght / tamanho_das_partes)
     nrows = tamanho_das_partes
     skiprows = 0
 
-    print('Este arquivo será dividido em ' + str(partes) + ' partes para inserção no banco de dados')
+    logger.info('Este arquivo será dividido em ' + str(partes) + ' partes para inserção no banco de dados')
 
     for i in range(0, partes):
-        print('Iniciando a parte ' + str(i+1) + ' [...]')
+        logger.info('Iniciando a parte ' + str(i+1) + ' [...]')
         simples = pd.DataFrame(columns=[1,2,3,4,5,6])
 
         simples = pd.read_csv(filepath_or_buffer=extracted_file_path,
@@ -445,7 +450,7 @@ for e in range(0, len(arquivos_simples)):
         # Gravar dados no banco:
         # simples
         simples.to_sql(name='simples', con=engine, if_exists='append', index=False)
-        print('Arquivo ' + arquivos_simples[e] + ' inserido com sucesso no banco de dados! - Parte '+ str(i+1))
+        logger.info('Arquivo ' + arquivos_simples[e] + ' inserido com sucesso no banco de dados! - Parte '+ str(i+1))
 
         try:
             del simples
@@ -457,15 +462,15 @@ try:
 except:
     pass
 
-print('Arquivos do simples finalizados!')
+logger.info('Arquivos do simples finalizados!')
 simples_insert_end = time.time()
 simples_Tempo_insert = round((simples_insert_end - simples_insert_start))
-print('Tempo de execução do processo do Simples Nacional (em segundos): ' + str(simples_Tempo_insert))
+logger.info('Tempo de execução do processo do Simples Nacional (em segundos): ' + str(simples_Tempo_insert))
 
 #%%
 # Arquivos de cnae:
 cnae_insert_start = time.time()
-print("""
+logger.info("""
 ######################
 ## Arquivos de cnae:
 ######################
@@ -476,7 +481,7 @@ cur.execute('DROP TABLE IF EXISTS "cnae";')
 conn.commit()
 
 for e in range(0, len(arquivos_cnae)):
-    print('Trabalhando no arquivo: '+arquivos_cnae[e]+' [...]')
+    logger.info('Trabalhando no arquivo: '+arquivos_cnae[e]+' [...]')
     try:
         del cnae
     except:
@@ -496,21 +501,21 @@ for e in range(0, len(arquivos_cnae)):
     # Gravar dados no banco:
     # cnae
     cnae.to_sql(name='cnae', con=engine, if_exists='append', index=False)
-    print('Arquivo ' + arquivos_cnae[e] + ' inserido com sucesso no banco de dados!')
+    logger.info('Arquivo ' + arquivos_cnae[e] + ' inserido com sucesso no banco de dados!')
 
 try:
     del cnae
 except:
     pass
-print('Arquivos de cnae finalizados!')
+logger.info('Arquivos de cnae finalizados!')
 cnae_insert_end = time.time()
 cnae_Tempo_insert = round((cnae_insert_end - cnae_insert_start))
-print('Tempo de execução do processo de cnae (em segundos): ' + str(cnae_Tempo_insert))
+logger.info('Tempo de execução do processo de cnae (em segundos): ' + str(cnae_Tempo_insert))
 
 #%%
 # Arquivos de moti:
 moti_insert_start = time.time()
-print("""
+logger.info("""
 #########################################
 ## Arquivos de motivos da situação atual:
 #########################################
@@ -521,7 +526,7 @@ cur.execute('DROP TABLE IF EXISTS "moti";')
 conn.commit()
 
 for e in range(0, len(arquivos_moti)):
-    print('Trabalhando no arquivo: '+arquivos_moti[e]+' [...]')
+    logger.info('Trabalhando no arquivo: '+arquivos_moti[e]+' [...]')
     try:
         del moti
     except:
@@ -541,21 +546,21 @@ for e in range(0, len(arquivos_moti)):
     # Gravar dados no banco:
     # moti
     moti.to_sql(name='moti', con=engine, if_exists='append', index=False)
-    print('Arquivo ' + arquivos_moti[e] + ' inserido com sucesso no banco de dados!')
+    logger.info('Arquivo ' + arquivos_moti[e] + ' inserido com sucesso no banco de dados!')
 
 try:
     del moti
 except:
     pass
-print('Arquivos de moti finalizados!')
+logger.info('Arquivos de moti finalizados!')
 moti_insert_end = time.time()
 moti_Tempo_insert = round((moti_insert_end - moti_insert_start))
-print('Tempo de execução do processo de motivos da situação atual (em segundos): ' + str(moti_Tempo_insert))
+logger.info('Tempo de execução do processo de motivos da situação atual (em segundos): ' + str(moti_Tempo_insert))
 
 #%%
 # Arquivos de munic:
 munic_insert_start = time.time()
-print("""
+logger.info("""
 ##########################
 ## Arquivos de municípios:
 ##########################
@@ -566,7 +571,7 @@ cur.execute('DROP TABLE IF EXISTS "munic";')
 conn.commit()
 
 for e in range(0, len(arquivos_munic)):
-    print('Trabalhando no arquivo: '+arquivos_munic[e]+' [...]')
+    logger.info('Trabalhando no arquivo: '+arquivos_munic[e]+' [...]')
     try:
         del munic
     except:
@@ -586,21 +591,21 @@ for e in range(0, len(arquivos_munic)):
     # Gravar dados no banco:
     # munic
     munic.to_sql(name='munic', con=engine, if_exists='append', index=False)
-    print('Arquivo ' + arquivos_munic[e] + ' inserido com sucesso no banco de dados!')
+    logger.info('Arquivo ' + arquivos_munic[e] + ' inserido com sucesso no banco de dados!')
 
 try:
     del munic
 except:
     pass
-print('Arquivos de munic finalizados!')
+logger.info('Arquivos de munic finalizados!')
 munic_insert_end = time.time()
 munic_Tempo_insert = round((munic_insert_end - munic_insert_start))
-print('Tempo de execução do processo de municípios (em segundos): ' + str(munic_Tempo_insert))
+logger.info('Tempo de execução do processo de municípios (em segundos): ' + str(munic_Tempo_insert))
 
 #%%
 # Arquivos de natju:
 natju_insert_start = time.time()
-print("""
+logger.info("""
 #################################
 ## Arquivos de natureza jurídica:
 #################################
@@ -611,7 +616,7 @@ cur.execute('DROP TABLE IF EXISTS "natju";')
 conn.commit()
 
 for e in range(0, len(arquivos_natju)):
-    print('Trabalhando no arquivo: '+arquivos_natju[e]+' [...]')
+    logger.info('Trabalhando no arquivo: '+arquivos_natju[e]+' [...]')
     try:
         del natju
     except:
@@ -631,21 +636,21 @@ for e in range(0, len(arquivos_natju)):
     # Gravar dados no banco:
     # natju
     natju.to_sql(name='natju', con=engine, if_exists='append', index=False)
-    print('Arquivo ' + arquivos_natju[e] + ' inserido com sucesso no banco de dados!')
+    logger.info('Arquivo ' + arquivos_natju[e] + ' inserido com sucesso no banco de dados!')
 
 try:
     del natju
 except:
     pass
-print('Arquivos de natju finalizados!')
+logger.info('Arquivos de natju finalizados!')
 natju_insert_end = time.time()
 natju_Tempo_insert = round((natju_insert_end - natju_insert_start))
-print('Tempo de execução do processo de natureza jurídica (em segundos): ' + str(natju_Tempo_insert))
+logger.info('Tempo de execução do processo de natureza jurídica (em segundos): ' + str(natju_Tempo_insert))
 
 #%%
 # Arquivos de pais:
 pais_insert_start = time.time()
-print("""
+logger.info("""
 ######################
 ## Arquivos de país:
 ######################
@@ -656,7 +661,7 @@ cur.execute('DROP TABLE IF EXISTS "pais";')
 conn.commit()
 
 for e in range(0, len(arquivos_pais)):
-    print('Trabalhando no arquivo: '+arquivos_pais[e]+' [...]')
+    logger.info('Trabalhando no arquivo: '+arquivos_pais[e]+' [...]')
     try:
         del pais
     except:
@@ -676,21 +681,21 @@ for e in range(0, len(arquivos_pais)):
     # Gravar dados no banco:
     # pais
     pais.to_sql(name='pais', con=engine, if_exists='append', index=False)
-    print('Arquivo ' + arquivos_pais[e] + ' inserido com sucesso no banco de dados!')
+    logger.info('Arquivo ' + arquivos_pais[e] + ' inserido com sucesso no banco de dados!')
 
 try:
     del pais
 except:
     pass
-print('Arquivos de pais finalizados!')
+logger.info('Arquivos de pais finalizados!')
 pais_insert_end = time.time()
 pais_Tempo_insert = round((pais_insert_end - pais_insert_start))
-print('Tempo de execução do processo de país (em segundos): ' + str(pais_Tempo_insert))
+logger.info('Tempo de execução do processo de país (em segundos): ' + str(pais_Tempo_insert))
 
 #%%
 # Arquivos de qualificação de sócios:
 quals_insert_start = time.time()
-print("""
+logger.info("""
 ######################################
 ## Arquivos de qualificação de sócios:
 ######################################
@@ -701,7 +706,7 @@ cur.execute('DROP TABLE IF EXISTS "quals";')
 conn.commit()
 
 for e in range(0, len(arquivos_quals)):
-    print('Trabalhando no arquivo: '+arquivos_quals[e]+' [...]')
+    logger.info('Trabalhando no arquivo: '+arquivos_quals[e]+' [...]')
     try:
         del quals
     except:
@@ -721,28 +726,28 @@ for e in range(0, len(arquivos_quals)):
     # Gravar dados no banco:
     # quals
     quals.to_sql(name='quals', con=engine, if_exists='append', index=False)
-    print('Arquivo ' + arquivos_quals[e] + ' inserido com sucesso no banco de dados!')
+    logger.info('Arquivo ' + arquivos_quals[e] + ' inserido com sucesso no banco de dados!')
 
 try:
     del quals
 except:
     pass
-print('Arquivos de quals finalizados!')
+logger.info('Arquivos de quals finalizados!')
 quals_insert_end = time.time()
 quals_Tempo_insert = round((quals_insert_end - quals_insert_start))
-print('Tempo de execução do processo de qualificação de sócios (em segundos): ' + str(quals_Tempo_insert))
+logger.info('Tempo de execução do processo de qualificação de sócios (em segundos): ' + str(quals_Tempo_insert))
 
 #%%
 insert_end = time.time()
 Tempo_insert = round((insert_end - insert_start))
 
-print("""
+logger.info("""
 #############################################
 ## Processo de carga dos arquivos finalizado!
 #############################################
 """)
 
-print('Tempo total de execução do processo de carga (em segundos): ' + str(Tempo_insert)) # Tempo de execução do processo (em segundos): 17.770 (4hrs e 57 min)
+logger.info('Tempo total de execução do processo de carga (em segundos): ' + str(Tempo_insert)) # Tempo de execução do processo (em segundos): 17.770 (4hrs e 57 min)
 
 # ###############################
 # Tamanho dos arquivos:
@@ -755,7 +760,7 @@ print('Tempo total de execução do processo de carga (em segundos): ' + str(Tem
 #%%
 # Criar índices na base de dados:
 index_start = time.time()
-print("""
+logger.info("""
 #######################################
 ## Criar índices na base de dados [...]
 #######################################
@@ -771,7 +776,7 @@ create index simples_cnpj on simples(cnpj_basico);
 commit;
 """)
 conn.commit()
-print("""
+logger.info("""
 ############################################################
 ## Índices criados nas tabelas, para a coluna `cnpj_basico`:
    - empresa
@@ -782,10 +787,10 @@ print("""
 """)
 index_end = time.time()
 index_time = round(index_end - index_start)
-print('Tempo para criar os índices (em segundos): ' + str(index_time))
+logger.info('Tempo para criar os índices (em segundos): ' + str(index_time))
 
 #%%
-print("""Processo 100% finalizado! Você já pode usar seus dados no BD!
+logger.info("""Processo 100% finalizado! Você já pode usar seus dados no BD!
  - Desenvolvido por: Aphonso Henrique do Amaral Rafael
  - Contribua com esse projeto aqui: https://github.com/aphonsoar/Receita_Federal_do_Brasil_-_Dados_Publicos_CNPJ
 """)
