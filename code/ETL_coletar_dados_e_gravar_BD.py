@@ -14,6 +14,32 @@ import time
 import urllib.request
 import wget
 import zipfile
+import logging
+
+#Config Log
+# DateTime:Level:Arquivo:Mensagem
+log_format = '%(asctime)s:%(levelname)s:%(filename)s:%(message)s'
+'''
+   Aqui definimos as configurações do modulo.
+
+   filename = 'nome do arquivo em que vamos salvar a mensagem do log.'
+   filemode = 'É a forma em que o arquivo será gravado.'
+   level = 'Level em que o log atuará'
+   format = 'Formatação da mensagem do log'
+'''
+logging.basicConfig(filename='exemplo.log',
+                    # w -> sobrescreve o arquivo a cada log
+                    # a -> não sobrescreve o arquivo
+                    filemode='w',
+                    level=logging.DEBUG,
+                    format=log_format)
+
+'''
+   O objeto getLogger() permite que retornemos
+   varias instancias de logs.
+'''
+# Instancia do objeto getLogger()
+logger = logging.getLogger('root')
 
 #%%
 def getEnv(env):
@@ -39,13 +65,16 @@ for m in re.finditer(text, html_str):
     i_end = m.end()
     i_loc = html_str[i_start:i_end].find('href=')+6
     print(html_str[i_start+i_loc:i_end])
+    logger.info(html_str[i_start+i_loc:i_end])
     Files.append(html_str[i_start+i_loc:i_end])
 
 print('Arquivos que serão baixados:')
+logger.info('Arquivos que serão baixados:')
 i_f = 0
 for f in Files:
     i_f += 1
     print(str(i_f) + ' - ' + f)
+    logger.info(str(i_f) + ' - ' + f)
 
 #%%
 ########################################################################################################################
@@ -73,9 +102,9 @@ def bar_progress(current, total, width=80):
 
 #%%
 # Download layout:
-Layout = 'https://www.gov.br/receitafederal/pt-br/assuntos/orientacao-tributaria/cadastros/consultas/arquivos/NOVOLAYOUTDOSDADOSABERTOSDOCNPJ.pdf'
-print('Baixando layout:')
-wget.download(Layout, out=str(output_files), bar=bar_progress)
+#Layout = 'https://www.gov.br/receitafederal/pt-br/assuntos/orientacao-tributaria/cadastros/consultas/arquivos/NOVOLAYOUTDOSDADOSABERTOSDOCNPJ.pdf'
+#print('Baixando layout:')
+#wget.download(Layout, out=str(output_files), bar=bar_progress)
 
 ####################################################################################################################################################
 #%%
@@ -84,16 +113,16 @@ if not os.path.exists(extracted_files):
     os.mkdir(extracted_files)
 
 # Extracting files:
-i_l = 0
-for l in Files:
-    try:
-        i_l += 1
-        print('Descompactando arquivo:')
-        print(str(i_l) + ' - ' + l)
-        with zipfile.ZipFile(output_files / l, 'r') as zip_ref:
-            zip_ref.extractall(extracted_files)
-    except:
-        pass
+#i_l = 0
+#for l in Files:
+#    try:
+#        i_l += 1
+#        print('Descompactando arquivo:')
+#        print(str(i_l) + ' - ' + l)
+#        with zipfile.ZipFile(output_files / l, 'r') as zip_ref:
+#            zip_ref.extractall(extracted_files)
+#    except:
+#        pass
 
 #%%
 ########################################################################################################################
@@ -180,6 +209,7 @@ for e in range(0, len(arquivos_empresa)):
     empresa = pd.read_csv(filepath_or_buffer=extracted_file_path,
                           sep=';',
                           #nrows=100,
+                          encoding='latin1',
                           skiprows=0,
                           header=None,
                           dtype=empresa_dtypes)
@@ -236,6 +266,7 @@ for e in range(0, len(arquivos_estabelecimento)):
                           sep=';',
                           #nrows=100,
                           skiprows=0,
+                          encoding='latin1',
                           header=None,
                           dtype='object')
 
@@ -315,6 +346,7 @@ for e in range(0, len(arquivos_socios)):
                           sep=';',
                           #nrows=100,
                           skiprows=0,
+                          encoding='latin1',
                           header=None,
                           dtype='object')
 
@@ -392,6 +424,7 @@ for e in range(0, len(arquivos_simples)):
                               nrows=nrows,
                               skiprows=skiprows,
                               header=None,
+                              encoding='latin1',
                               dtype='object')
 
         # Tratamento do arquivo antes de inserir na base:
