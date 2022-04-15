@@ -51,7 +51,7 @@ try:
     dados_rf = 'http://200.152.38.155/CNPJ/'
     output_files = Path(getEnv('OUTPUT_FILES_PATH'))
     extracted_files = Path(getEnv('EXTRACTED_FILES_PATH'))
-    raw_html = urllib.request.url(dados_rf)
+    raw_html = urllib.request.urlopen(dados_rf)
     raw_html = raw_html.read()
 
     # Formatar página e converter em string
