@@ -236,7 +236,7 @@ try:
 
             empresa = pd.read_csv(filepath_or_buffer=extracted_file_path,
                             sep=';',
-                            nrows=100,
+                            #nrows=100,
                             encoding='latin1',
                             skiprows=0,
                             header=None,
@@ -309,7 +309,7 @@ try:
 
         estabelecimento = pd.read_csv(filepath_or_buffer=extracted_file_path,
                             sep=';',
-                            nrows=100,
+                            #nrows=100,
                             skiprows=0,
                             encoding='latin1',
                             header=None,
@@ -400,7 +400,7 @@ try:
         socios = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11])
         socios = pd.read_csv(filepath_or_buffer=extracted_file_path,
                             sep=';',
-                            nrows=100,
+                            #nrows=100,
                             skiprows=0,
                             encoding='latin1',
                             header=None,
