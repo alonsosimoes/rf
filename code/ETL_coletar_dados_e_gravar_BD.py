@@ -51,7 +51,7 @@ try:
     dados_rf = 'http://200.152.38.155/CNPJ/'
     output_files = Path(getEnv('OUTPUT_FILES_PATH'))
     extracted_files = Path(getEnv('EXTRACTED_FILES_PATH'))
-    raw_html = urllib.request.urlopen(dados_rf)
+    raw_html = urllib.request.url(dados_rf)
     raw_html = raw_html.read()
 
     # Formatar página e converter em string
@@ -213,7 +213,7 @@ try:
         print('Lendo o arquivo ' + arquivos_empresa[e]+' [...]')
         extracted_file_path = Path(f'{extracted_files}/{arquivos_empresa[e]}')
 
-        empresa_lenght = sum(1 for line in open(extracted_file_path, "r"))
+        empresa_lenght = sum(1 for line in open(extracted_file_path, "r", encoding='latin1'))
         logger.info('Linhas no arquivo do Empresa '+ arquivos_empresa[e] +': '+str(empresa_lenght))
         print('Linhas no arquivo do Empresa '+ arquivos_empresa[e] +': '+str(empresa_lenght))
 
@@ -472,7 +472,7 @@ try:
         print('Lendo o arquivo ' + arquivos_simples[e]+' [...]')
         extracted_file_path = Path(f'{extracted_files}/{arquivos_simples[e]}')
 
-        simples_lenght = sum(1 for line in open(extracted_file_path, "r"))
+        simples_lenght = sum(1 for line in open(extracted_file_path, "r", encoding='latin1'))
         logger.info('Linhas no arquivo do Simples '+ arquivos_simples[e] +': '+str(simples_lenght))
         print('Linhas no arquivo do Simples '+ arquivos_simples[e] +': '+str(simples_lenght))
 
