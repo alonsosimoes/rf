@@ -217,7 +217,7 @@ try:
         logger.info('Linhas no arquivo do Empresa '+ arquivos_empresa[e] +': '+str(empresa_lenght))
         print('Linhas no arquivo do Empresa '+ arquivos_empresa[e] +': '+str(empresa_lenght))
 
-        tamanho_das_partes = 1000000 # Registros por carga
+        tamanho_das_partes = 500000 # Registros por carga
         partes = round(empresa_lenght / tamanho_das_partes)
         nrows = tamanho_das_partes
         skiprows = 0
@@ -236,9 +236,9 @@ try:
 
             empresa = pd.read_csv(filepath_or_buffer=extracted_file_path,
                             sep=';',
-                            #nrows=100,
+                            nrows=nrows,
+                            skiprows=skiprows,
                             encoding='latin1',
-                            skiprows=0,
                             header=None,
                             dtype=empresa_dtypes)
 
