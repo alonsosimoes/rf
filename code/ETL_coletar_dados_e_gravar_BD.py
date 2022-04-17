@@ -31,7 +31,7 @@ try:
     logging.basicConfig(filename='exemplo.log',
                         # w -> sobrescreve o arquivo a cada log
                         # a -> não sobrescreve o arquivo
-                        filemode='w',
+                        filemode='a',
                         level=logging.DEBUG,
                         format=log_format)
 
