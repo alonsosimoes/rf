@@ -182,6 +182,9 @@ try:
     conn = psycopg2.connect('dbname='+database+' '+'user='+user+' '+'host='+host+' '+'password='+passw)
     cur = conn.cursor()
 
+    
+    '''
+
     #%%
     # Arquivos de empresa:
     empresa_insert_start = time.time()
@@ -275,7 +278,8 @@ try:
     empresa_Tempo_insert = round((empresa_insert_end - empresa_insert_start))
     logger.info('Tempo de execução do processo de empresa (em segundos): ' + str(empresa_Tempo_insert))
     print('Tempo de execução do processo de empresa (em segundos): ' + str(empresa_Tempo_insert))
-
+    
+    '''
     #%%
     # Arquivos de estabelecimento:
     estabelecimento_insert_start = time.time()
@@ -304,58 +308,85 @@ try:
         except:
             pass
 
-        estabelecimento = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28])
+        # Verificar tamanho do arquivo:
+        logger.info('Lendo o arquivo ' + arquivos_estabelecimento[e]+' [...]')
+        print('Lendo o arquivo ' + arquivos_estabelecimento[e]+' [...]')
         extracted_file_path = Path(f'{extracted_files}/{arquivos_estabelecimento[e]}')
 
-        estabelecimento = pd.read_csv(filepath_or_buffer=extracted_file_path,
+        estabelecimento_lenght = sum(1 for line in open(extracted_file_path, "r", encoding='latin1'))
+        logger.info('Linhas no arquivo do estabelecimento '+ arquivos_estabelecimento[e] +': '+str(estabelecimento_lenght))
+        print('Linhas no arquivo do estabelecimento '+ arquivos_estabelecimento[e] +': '+str(estabelecimento_lenght))
+
+        tamanho_das_partes = 500000 # Registros por carga
+        partes = round(estabelecimento_lenght / tamanho_das_partes)
+        nrows = tamanho_das_partes
+        skiprows = 0
+
+        logger.info('Este arquivo será dividido em ' + str(partes) + ' partes para inserção no banco de dados')
+        print('Este arquivo será dividido em ' + str(partes) + ' partes para inserção no banco de dados')
+
+
+        for i in range(0, partes):
+            logger.info('Iniciando a parte ' + str(i+1) + ' [...]')
+            print('Iniciando a parte ' + str(i+1) + ' [...]')
+            estabelecimento = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28])
+        
+            extracted_file_path = Path(f'{extracted_files}/{arquivos_estabelecimento[e]}')
+
+            estabelecimento = pd.read_csv(filepath_or_buffer=extracted_file_path,
                             sep=';',
-                            #nrows=100,
-                            skiprows=0,
+                            nrows=nrows,
+                            skiprows=skiprows,
                             encoding='latin1',
                             header=None,
                             dtype='object')
 
-        # Tratamento do arquivo antes de inserir na base:
-        estabelecimento = estabelecimento.reset_index()
-        del estabelecimento['index']
+            # Tratamento do arquivo antes de inserir na base:
+            estabelecimento = estabelecimento.reset_index()
+            del estabelecimento['index']
 
-        # Renomear colunas
-        estabelecimento.columns = ['cnpj_basico',
-                                'cnpj_ordem',
-                                'cnpj_dv',
-                                'identificador_matriz_filial',
-                                'nome_fantasia',
-                                'situacao_cadastral',
-                                'data_situacao_cadastral',
-                                'motivo_situacao_cadastral',
-                                'nome_cidade_exterior',
-                                'pais',
-                                'data_inicio_atividade',
-                                'cnae_fiscal_principal',
-                                'cnae_fiscal_secundaria',
-                                'tipo_logradouro',
-                                'logradouro',
-                                'numero',
-                                'complemento',
-                                'bairro',
-                                'cep',
-                                'uf',
-                                'municipio',
-                                'ddd_1',
-                                'telefone_1',
-                                'ddd_2',
-                                'telefone_2',
-                                'ddd_fax',
-                                'fax',
-                                'correio_eletronico',
-                                'situacao_especial',
-                                'data_situacao_especial']
+            # Renomear colunas
+            estabelecimento.columns = ['cnpj_basico',
+                                    'cnpj_ordem',
+                                    'cnpj_dv',
+                                    'identificador_matriz_filial',
+                                    'nome_fantasia',
+                                    'situacao_cadastral',
+                                    'data_situacao_cadastral',
+                                    'motivo_situacao_cadastral',
+                                    'nome_cidade_exterior',
+                                    'pais',
+                                    'data_inicio_atividade',
+                                    'cnae_fiscal_principal',
+                                    'cnae_fiscal_secundaria',
+                                    'tipo_logradouro',
+                                    'logradouro',
+                                    'numero',
+                                    'complemento',
+                                    'bairro',
+                                    'cep',
+                                    'uf',
+                                    'municipio',
+                                    'ddd_1',
+                                    'telefone_1',
+                                    'ddd_2',
+                                    'telefone_2',
+                                    'ddd_fax',
+                                    'fax',
+                                    'correio_eletronico',
+                                    'situacao_especial',
+                                    'data_situacao_especial']
 
-        # Gravar dados no banco:
-        # estabelecimento
-        estabelecimento.to_sql(name='estabelecimento', con=engine, if_exists='append', index=False)
-        logger.info('Arquivo ' + arquivos_estabelecimento[e] + ' inserido com sucesso no banco de dados!')
-        print('Arquivo ' + arquivos_estabelecimento[e] + ' inserido com sucesso no banco de dados!')
+            skiprows = skiprows+nrows
+            # Gravar dados no banco:
+            # estabelecimento
+            estabelecimento.to_sql(name='estabelecimento', con=engine, if_exists='append', index=False)
+            logger.info('Arquivo ' + arquivos_estabelecimento[e] + ' inserido com sucesso no banco de dados! - Parte '+ str(i+1))
+            print('Arquivo ' + arquivos_estabelecimento[e] + ' inserido com sucesso no banco de dados! - Parte '+ str(i+1))
+            try:
+                del estabelecimento
+            except:
+                pass
 
     try:
         del estabelecimento
@@ -396,39 +427,65 @@ try:
         except:
             pass
 
+        # Verificar tamanho do arquivo:
+        logger.info('Lendo o arquivo ' + arquivos_socios[e]+' [...]')
+        print('Lendo o arquivo ' + arquivos_socios[e]+' [...]')
+        
         extracted_file_path = Path(f'{extracted_files}/{arquivos_socios[e]}')
-        socios = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11])
-        socios = pd.read_csv(filepath_or_buffer=extracted_file_path,
-                            sep=';',
-                            #nrows=100,
-                            skiprows=0,
-                            encoding='latin1',
-                            header=None,
-                            dtype='object')
 
-        # Tratamento do arquivo antes de inserir na base:
-        socios = socios.reset_index()
-        del socios['index']
+        socios_lenght = sum(1 for line in open(extracted_file_path, "r", encoding='latin1'))
+        logger.info('Linhas no arquivo do socios '+ arquivos_socios[e] +': '+str(socios_lenght))
+        print('Linhas no arquivo do socios '+ arquivos_socios[e] +': '+str(socios_lenght))
 
-        # Renomear colunas
-        socios.columns = ['cnpj_basico',
-                        'identificador_socio',
-                        'nome_socio_razao_social',
-                        'cpf_cnpj_socio',
-                        'qualificacao_socio',
-                        'data_entrada_sociedade',
-                        'pais',
-                        'representante_legal',
-                        'nome_do_representante',
-                        'qualificacao_representante_legal',
-                        'faixa_etaria']
+        tamanho_das_partes = 500000 # Registros por carga
+        partes = round(socios_lenght / tamanho_das_partes)
+        nrows = tamanho_das_partes
+        skiprows = 0
 
-        # Gravar dados no banco:
-        # socios
-        socios.to_sql(name='socios', con=engine, if_exists='append', index=False)
-        logger.info('Arquivo ' + arquivos_socios[e] + ' inserido com sucesso no banco de dados!')
-        print('Arquivo ' + arquivos_socios[e] + ' inserido com sucesso no banco de dados!')
+        logger.info('Este arquivo será dividido em ' + str(partes) + ' partes para inserção no banco de dados')
+        print('Este arquivo será dividido em ' + str(partes) + ' partes para inserção no banco de dados')
 
+
+        for i in range(0, partes):
+            logger.info('Iniciando a parte ' + str(i+1) + ' [...]')
+            print('Iniciando a parte ' + str(i+1) + ' [...]')
+     
+            extracted_file_path = Path(f'{extracted_files}/{arquivos_socios[e]}')
+            socios = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11])
+            socios = pd.read_csv(filepath_or_buffer=extracted_file_path,
+                                sep=';',
+                                nrows=nrows,
+                                skiprows=skiprows,
+                                encoding='latin1',
+                                header=None,
+                                dtype='object')
+
+            # Tratamento do arquivo antes de inserir na base:
+            socios = socios.reset_index()
+            del socios['index']
+
+            # Renomear colunas
+            socios.columns = ['cnpj_basico',
+                            'identificador_socio',
+                            'nome_socio_razao_social',
+                            'cpf_cnpj_socio',
+                            'qualificacao_socio',
+                            'data_entrada_sociedade',
+                            'pais',
+                            'representante_legal',
+                            'nome_do_representante',
+                            'qualificacao_representante_legal',
+                            'faixa_etaria']
+            skiprows = skiprows+nrows
+            # Gravar dados no banco:
+            # socios
+            socios.to_sql(name='socios', con=engine, if_exists='append', index=False)
+            logger.info('Arquivo ' + arquivos_socios[e] + ' inserido com sucesso no banco de dados! - Parte '+ str(i+1))
+            print('Arquivo ' + arquivos_socios[e] + ' inserido com sucesso no banco de dados! - Parte '+ str(i+1))
+            try:
+                del socios
+            except:
+                pass
     try:
         del socios
     except:
