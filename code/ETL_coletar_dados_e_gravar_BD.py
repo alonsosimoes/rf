@@ -279,7 +279,7 @@ try:
     logger.info('Tempo de execução do processo de empresa (em segundos): ' + str(empresa_Tempo_insert))
     print('Tempo de execução do processo de empresa (em segundos): ' + str(empresa_Tempo_insert))
     
-    '''
+    
     #%%
     # Arquivos de estabelecimento:
     estabelecimento_insert_start = time.time()
@@ -591,7 +591,8 @@ try:
     simples_Tempo_insert = round((simples_insert_end - simples_insert_start))
     logger.info('Tempo de execução do processo do Simples Nacional (em segundos): ' + str(simples_Tempo_insert))
     print('Tempo de execução do processo do Simples Nacional (em segundos): ' + str(simples_Tempo_insert))
-
+    
+    '''
     #%%
     # Arquivos de cnae:
     cnae_insert_start = time.time()
@@ -620,7 +621,7 @@ try:
 
         extracted_file_path = Path(f'{extracted_files}/{arquivos_cnae[e]}')
         cnae = pd.DataFrame(columns=[1,2])
-        cnae = pd.read_csv(filepath_or_buffer=extracted_file_path, sep=';', skiprows=0, header=None, dtype='object', encoding='ANSI')
+        cnae = pd.read_csv(filepath_or_buffer=extracted_file_path, sep=';', skiprows=0, header=None, dtype='object', encoding='latin1')
 
         # Tratamento do arquivo antes de inserir na base:
         cnae = cnae.reset_index()
@@ -674,7 +675,7 @@ try:
 
         extracted_file_path = Path(f'{extracted_files}/{arquivos_moti[e]}')
         moti = pd.DataFrame(columns=[1,2])
-        moti = pd.read_csv(filepath_or_buffer=extracted_file_path, sep=';', skiprows=0, header=None, dtype='object', encoding='ANSI')
+        moti = pd.read_csv(filepath_or_buffer=extracted_file_path, sep=';', skiprows=0, header=None, dtype='object', encoding='latin1')
 
         # Tratamento do arquivo antes de inserir na base:
         moti = moti.reset_index()
@@ -731,7 +732,7 @@ try:
 
         extracted_file_path = Path(f'{extracted_files}/{arquivos_munic[e]}')
         munic = pd.DataFrame(columns=[1,2])
-        munic = pd.read_csv(filepath_or_buffer=extracted_file_path, sep=';', skiprows=0, header=None, dtype='object', encoding='ANSI')
+        munic = pd.read_csv(filepath_or_buffer=extracted_file_path, sep=';', skiprows=0, header=None, dtype='object', encoding='latin1')
 
         # Tratamento do arquivo antes de inserir na base:
         munic = munic.reset_index()
@@ -786,7 +787,7 @@ try:
 
         extracted_file_path = Path(f'{extracted_files}/{arquivos_natju[e]}')
         natju = pd.DataFrame(columns=[1,2])
-        natju = pd.read_csv(filepath_or_buffer=extracted_file_path, sep=';', skiprows=0, header=None, dtype='object', encoding='ANSI')
+        natju = pd.read_csv(filepath_or_buffer=extracted_file_path, sep=';', skiprows=0, header=None, dtype='object', encoding='latin1')
 
         # Tratamento do arquivo antes de inserir na base:
         natju = natju.reset_index()
@@ -840,7 +841,7 @@ try:
 
         extracted_file_path = Path(f'{extracted_files}/{arquivos_pais[e]}')
         pais = pd.DataFrame(columns=[1,2])
-        pais = pd.read_csv(filepath_or_buffer=extracted_file_path, sep=';', skiprows=0, header=None, dtype='object', encoding='ANSI')
+        pais = pd.read_csv(filepath_or_buffer=extracted_file_path, sep=';', skiprows=0, header=None, dtype='object', encoding='latin1')
 
         # Tratamento do arquivo antes de inserir na base:
         pais = pais.reset_index()
@@ -894,7 +895,7 @@ try:
 
         extracted_file_path = Path(f'{extracted_files}/{arquivos_quals[e]}')
         quals = pd.DataFrame(columns=[1,2])
-        quals = pd.read_csv(filepath_or_buffer=extracted_file_path, sep=';', skiprows=0, header=None, dtype='object', encoding='ANSI')
+        quals = pd.read_csv(filepath_or_buffer=extracted_file_path, sep=';', skiprows=0, header=None, dtype='object', encoding='latin1')
 
         # Tratamento do arquivo antes de inserir na base:
         quals = quals.reset_index()
@@ -948,6 +949,7 @@ try:
 
     #%%
     # Criar índices na base de dados:
+    '''
     index_start = time.time()
     logger.info("""
     #######################################
@@ -1007,6 +1009,6 @@ try:
     - Desenvolvido por: Aphonso Henrique do Amaral Rafael
     - Contribua com esse projeto aqui: https://github.com/aphonsoar/Receita_Federal_do_Brasil_-_Dados_Publicos_CNPJ
     """)
-
+'''
 except Exception as Argument:
     logging.exception("Erro ocorreu!!!!")
