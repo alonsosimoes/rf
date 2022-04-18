@@ -993,7 +993,7 @@ try:
         logger.info('Linhas no arquivo da tributação '+ arquivos_tribu[e] +': '+str(tribu_lenght))
         print('Linhas no arquivo da tributação '+ arquivos_tribu[e] +': '+str(tribu_lenght))
 
-        tamanho_das_partes = 10000 # Registros por carga
+        tamanho_das_partes = 100000 # Registros por carga
         partes = round(tribu_lenght / tamanho_das_partes)
         nrows = tamanho_das_partes
         skiprows = 0
@@ -1030,8 +1030,8 @@ try:
             tributacao['cnpj'] = tributacao['cnpj'].apply(lambda x: x.replace('.',''))
             
             # Expand cnpj_ordem
-            tributacao['cnpj_basico', 'ordem'] = tributacao['cnpj'].str.split('/', expand=True)
-            tributacao['cnpj_ordem', 'cnpj_dv'] = tributacao['ordem'].str.split('-', expand=True)
+            tributacao[['cnpj_basico', 'ordem']] = tributacao['cnpj'].str.split('/', expand=True)
+            tributacao[['cnpj_ordem', 'cnpj_dv']] = tributacao['ordem'].str.split('-', expand=True)
             del tributacao['ordem']
             del tributacao['cnpj']
             
