@@ -954,7 +954,7 @@ try:
 
     #%%
     # Criar índices na base de dados:
-    '''
+    
     
     #%%
     # Arquivos de tributação:
@@ -1061,7 +1061,8 @@ try:
     logger.info('Tempo de execução do processo de tributação (em segundos): ' + str(tribu_Tempo_insert))
     print('Tempo de execução do processo de tributação (em segundos): ' + str(tribu_Tempo_insert))    
 
-    ''''
+    '''
+    
     index_start = time.time()
     logger.info("""
     #######################################
@@ -1084,6 +1085,8 @@ try:
     commit;
     create index simples_cnpj on simples(cnpj_basico);
     commit;
+    create index tributacao_cnpj on tributacao(cnpj_basico);
+    commit;
     """)
     conn.commit()
     logger.info("""
@@ -1093,6 +1096,7 @@ try:
     - estabelecimento
     - socios
     - simples
+    - tributação
     ############################################################
     """)
 
@@ -1103,6 +1107,7 @@ try:
     - estabelecimento
     - socios
     - simples
+    - tributação
     ############################################################
     """)
 
@@ -1121,6 +1126,6 @@ try:
     - Desenvolvido por: Aphonso Henrique do Amaral Rafael
     - Contribua com esse projeto aqui: https://github.com/aphonsoar/Receita_Federal_do_Brasil_-_Dados_Publicos_CNPJ
     """)
-'''
+
 except Exception as Argument:
     logging.exception("Erro ocorreu!!!!")
