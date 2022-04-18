@@ -144,6 +144,7 @@ try:
     arquivos_natju = []
     arquivos_pais = []
     arquivos_quals = []
+    arquivos_tribu = []
     for i in range(len(Items)):
         if Items[i].find('EMPRE') > -1:
             arquivos_empresa.append(Items[i])
@@ -165,6 +166,10 @@ try:
             arquivos_pais.append(Items[i])
         elif Items[i].find('QUALS') > -1:
             arquivos_quals.append(Items[i])
+        elif Items[i].find('LUCRO') > -1:
+            arquivos_tribu.append(Items[i])
+        elif Items[i].find('IMUNES') > -1:
+            arquivos_tribu.append(Items[i])
         else:
             pass
 
@@ -592,7 +597,7 @@ try:
     logger.info('Tempo de execução do processo do Simples Nacional (em segundos): ' + str(simples_Tempo_insert))
     print('Tempo de execução do processo do Simples Nacional (em segundos): ' + str(simples_Tempo_insert))
     
-    '''
+    
     #%%
     # Arquivos de cnae:
     cnae_insert_start = time.time()
@@ -950,6 +955,114 @@ try:
     #%%
     # Criar índices na base de dados:
     '''
+    
+    #%%
+    # Arquivos de tributação:
+    tribu_insert_start = time.time()
+
+    logger.info("""
+    ############################### 
+    ## Arquivos de TRIBUTAÇÃO:
+    ###############################
+    """)
+
+    print("""
+    ############################### 
+    ## Arquivos de TRIBUTAÇÃO:
+    ###############################
+    """)
+
+    # Drop table antes do insert
+    cur.execute('DROP TABLE IF EXISTS "tributacao";')
+    conn.commit()
+
+    for e in range(0, len(arquivos_tribu)):
+        logger.info('Trabalhando no arquivo: '+arquivos_tribu[e]+' [...]')
+        print('Trabalhando no arquivo: '+arquivos_tribu[e]+' [...]')
+        try:
+            del tributacao
+        except:
+            pass
+
+        # Verificar tamanho do arquivo:
+        logger.info('Lendo o arquivo ' + arquivos_tribu[e]+' [...]')
+        print('Lendo o arquivo ' + arquivos_tribu[e]+' [...]')
+        extracted_file_path = Path(f'{extracted_files}/{arquivos_tribu[e]}')
+
+        tribu_lenght = sum(1 for line in open(extracted_file_path, "r", encoding='latin1'))
+        logger.info('Linhas no arquivo da tributação '+ arquivos_tribu[e] +': '+str(tribu_lenght))
+        print('Linhas no arquivo da tributação '+ arquivos_tribu[e] +': '+str(tribu_lenght))
+
+        tamanho_das_partes = 500000 # Registros por carga
+        partes = round(tribu_lenght / tamanho_das_partes)
+        nrows = tamanho_das_partes
+        skiprows = 0
+
+        logger.info('Este arquivo será dividido em ' + str(partes) + ' partes para inserção no banco de dados')
+        print('Este arquivo será dividido em ' + str(partes) + ' partes para inserção no banco de dados')
+
+
+        for i in range(0, partes):
+            logger.info('Iniciando a parte ' + str(i+1) + ' [...]')
+            print('Iniciando a parte ' + str(i+1) + ' [...]')
+            tributacao = pd.DataFrame(columns=[1,2,3,4,5])
+        
+            extracted_file_path = Path(f'{extracted_files}/{arquivos_tribu[e]}')
+
+            tributacao = pd.read_csv(filepath_or_buffer=extracted_file_path,
+                            sep=',',
+                            nrows=nrows,
+                            skiprows=skiprows,
+                            encoding='latin1',
+                            header=None,
+                            dtype='object')
+
+            # Tratamento do arquivo antes de inserir na base:
+            tributacao = tributacao.reset_index()
+            del tributacao['index']
+
+            # Renomear colunas
+            tributacao.columns = ['ano', 'cnpj', 'forma_de_tributacao', 'municipio', 'uf']
+
+            skiprows = skiprows+nrows
+
+            # Remove "."
+            tributacao['cnpj'] = tributacao['cnpj'].apply(lambda x: x.replace('.',''))
+            
+            # Expand cnpj_ordem
+            tributacao['cnpj'] = tributacao['cnpj'].str.split('/', 1, expand=True)
+            tributacao.columns = ['ano', 'cnpj_basico', 'cnpj_ordem', 'forma_de_tributacao', 'municipio', 'uf']
+
+            # Expand cnpj_dv
+            tributacao['cnpj_ordem'] = tributacao['cnpj_ordem'].str.split('-', 1, expand=True)
+            tributacao.columns = ['ano', 'cnpj_basico', 'cnpj_ordem', 'cnpj_dv', 'forma_de_tributacao', 'municipio', 'uf']
+
+            tributacao['cnpj_basico'] = tributacao['cnpj_basico'].astype(object)
+            tributacao['cnpj_ordem'] = tributacao['cnpj_ordem'].astype(object)
+            tributacao['cnpj_dv'] = tributacao['cnpj_dv'].astype(object)
+
+            # Gravar dados no banco:
+            # estabelecimento
+            tributacao.to_sql(name='tributacao', con=engine, if_exists='append', index=False)
+            logger.info('Arquivo ' + arquivos_tribu[e] + ' inserido com sucesso no banco de dados! - Parte '+ str(i+1))
+            print('Arquivo ' + arquivos_tribu[e] + ' inserido com sucesso no banco de dados! - Parte '+ str(i+1))
+            try:
+                del tributacao
+            except:
+                pass
+
+    try:
+        del tributacao
+    except:
+        pass
+    logger.info('Arquivos de tributação finalizados!')
+    print('Arquivos de tributação finalizados!')
+    tribu_insert_end = time.time()
+    tribu_Tempo_insert = round((tribu_insert_end - tribu_insert_start))
+    logger.info('Tempo de execução do processo de tributação (em segundos): ' + str(tribu_Tempo_insert))
+    print('Tempo de execução do processo de tributação (em segundos): ' + str(tribu_Tempo_insert))    
+
+    ''''
     index_start = time.time()
     logger.info("""
     #######################################
