@@ -993,7 +993,7 @@ try:
         logger.info('Linhas no arquivo da tributação '+ arquivos_tribu[e] +': '+str(tribu_lenght))
         print('Linhas no arquivo da tributação '+ arquivos_tribu[e] +': '+str(tribu_lenght))
 
-        tamanho_das_partes = 500000 # Registros por carga
+        tamanho_das_partes = 10000 # Registros por carga
         partes = round(tribu_lenght / tamanho_das_partes)
         nrows = tamanho_das_partes
         skiprows = 0
@@ -1030,13 +1030,12 @@ try:
             tributacao['cnpj'] = tributacao['cnpj'].apply(lambda x: x.replace('.',''))
             
             # Expand cnpj_ordem
-            tributacao['cnpj'] = tributacao['cnpj'].str.split('/', 1, expand=True)
-            tributacao.columns = ['ano', 'cnpj_basico', 'cnpj_ordem', 'forma_de_tributacao', 'municipio', 'uf']
-
+            tributacao['cnpj_basico', 'ordem'] = tributacao['cnpj'].str.split('/', expand=True)
+            tributacao['cnpj_ordem', 'cnpj_dv'] = tributacao['ordem'].str.split('-', expand=True)
+            del tributacao['ordem']
+            del tributacao['cnpj']
+            
             # Expand cnpj_dv
-            tributacao['cnpj_ordem'] = tributacao['cnpj_ordem'].str.split('-', 1, expand=True)
-            tributacao.columns = ['ano', 'cnpj_basico', 'cnpj_ordem', 'cnpj_dv', 'forma_de_tributacao', 'municipio', 'uf']
-
             tributacao['cnpj_basico'] = tributacao['cnpj_basico'].astype(object)
             tributacao['cnpj_ordem'] = tributacao['cnpj_ordem'].astype(object)
             tributacao['cnpj_dv'] = tributacao['cnpj_dv'].astype(object)
